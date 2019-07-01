@@ -69,7 +69,7 @@ def main():
         if step == cli_args.start_at:
             started = True
         if started:
-            eval(step + "(cli_args)")
+            globals()[step](cli_args)
 
     # Finally, delete temporary files and end script with success exit code
     cleanup(cli_args.temp, 0)
@@ -452,14 +452,26 @@ def download_nda_data(cli_args):
     with downloaded NDA data.
     :return: N/A
     """
-    # Call Python script to parse good_and_bad_series_table and download data
     print("\nDownloading ABCD data from NDA. Download started at:")
     subprocess.check_call("date")
-    subprocess.check_call([
-        "python3",
-        GOOD_BAD_SERIES_PARSER,
-        cli_args.download
-    ])
+
+    # Call Python script to parse good_and_bad_series_table and download data
+    try:
+        subprocess.check_call([
+            "python3",
+            GOOD_BAD_SERIES_PARSER,
+            cli_args.download
+        ])
+
+    # If data download fails, then advise user about how to fix the problem
+    except subprocess.CalledProcessError:
+        print("Data download from NDA failed. Please check that you have a "
+              "'credentials' file in the .aws subdirectory of your home "
+              "directory, that you have the latest AWS CLI installed, and "
+              "that the 'aws' executable is in your BASH PATH variable. See "
+              "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-"
+              "install.html for more information.")
+
     print("\nABCD data download finished at:")
     subprocess.check_call("date")
 
