@@ -428,16 +428,19 @@ def create_good_and_bad_series_table(cli_args):
     """
     print("\ndata_gatherer to create good_and_bad_series_table started at:")
     subprocess.check_call("date")
-    try:
-        subprocess.check_call([DATA_GATHERER, cli_args.mre_dir])
+    data_gatherer_exit_code = subprocess.call([
+        DATA_GATHERER, cli_args.mre_dir
+    ])
 
     # If user does not have the right spreadsheets in the right location, then
-    # inform the user instead of spitting out an unhelpful stack trace
-    except subprocess.CalledProcessError:
+    # inform the user instead of spitting out an unhelpful stack trace.
+    # Manually catch error instead of using try-except to avoid trying to
+    # catch another file's exception.
+    if data_gatherer_exit_code is not 0:
         print("Error: data_gatherer failed. Please check that the "
               "./spreadsheets/ folder contains image03.txt and "
               "DAL_ABCD_QC_merged_pcqcinfo.csv, then run this script again.")
-        cleanup(cli_args.temp, 1)
+        cleanup(cli_args.temp, data_gatherer_exit_code)
 
     print("\ndata_gatherer finished at:")
     subprocess.check_call('date')
@@ -456,15 +459,16 @@ def download_nda_data(cli_args):
     subprocess.check_call("date")
 
     # Call Python script to parse good_and_bad_series_table and download data
-    try:
-        subprocess.check_call([
-            "python3",
-            GOOD_BAD_SERIES_PARSER,
-            cli_args.download
-        ])
+    download_call_exit_code = subprocess.call([
+        "python3",
+        GOOD_BAD_SERIES_PARSER,
+        cli_args.download
+    ])
 
-    # If data download fails, then advise user about how to fix the problem
-    except subprocess.CalledProcessError:
+    # If data download fails, then advise user about how to fix the problem.
+    # Manually catch error instead of using try-except to avoid trying to
+    # catch another file's exception.
+    if download_call_exit_code is not 0:
         print("\nData download from NDA failed. Please check that you have a "
               "'ABCD_good_and_bad_series_table.csv' spreadsheet in the "
               "'./spreadsheets/ folder, that you have a 'credentials' file in "
@@ -472,7 +476,7 @@ def download_nda_data(cli_args):
               "the latest AWS CLI installed, and that the 'aws' executable is "
               "in your BASH PATH variable. For more information, see https://"
               "docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html")
-        cleanup(cli_args.temp, 1)
+        cleanup(cli_args.temp, download_call_exit_code)
 
     print("\nABCD data download finished at:")
     subprocess.check_call("date")
