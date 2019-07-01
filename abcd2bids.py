@@ -471,6 +471,7 @@ def download_nda_data(cli_args):
               "that the 'aws' executable is in your BASH PATH variable. See "
               "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-"
               "install.html for more information.")
+        sys.exit(1)
 
     print("\nABCD data download finished at:")
     subprocess.check_call("date")
@@ -565,6 +566,7 @@ def run_bids_validator(cli_args):
 
     except subprocess.CalledProcessError:
         print("Error: BIDS validation failed.")
+        sys.exit(1)
 
 
 if __name__ == '__main__':
