@@ -360,7 +360,7 @@ def make_nda_token(args):
     if token_call_exit_code is not 0:
         print("Failed to create NDA token using the username and decrypted "
               "password from " + str(Path(args.config).resolve()))
-        sys.exit(1)
+        cleanup(args.temp, 1)
 
 
 def get_nda_credentials_from(config_file_path):
@@ -437,7 +437,7 @@ def create_good_and_bad_series_table(cli_args):
         print("Error: data_gatherer failed. Please check that the "
               "./spreadsheets/ folder contains image03.txt and "
               "DAL_ABCD_QC_merged_pcqcinfo.csv, then run this script again.")
-        sys.exit(1)
+        cleanup(cli_args.temp, 1)
 
     print("\ndata_gatherer finished at:")
     subprocess.check_call('date')
@@ -465,13 +465,14 @@ def download_nda_data(cli_args):
 
     # If data download fails, then advise user about how to fix the problem
     except subprocess.CalledProcessError:
-        print("Data download from NDA failed. Please check that you have a "
-              "'credentials' file in the .aws subdirectory of your home "
-              "directory, that you have the latest AWS CLI installed, and "
-              "that the 'aws' executable is in your BASH PATH variable. See "
-              "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-"
-              "install.html for more information.")
-        sys.exit(1)
+        print("\nData download from NDA failed. Please check that you have a "
+              "'ABCD_good_and_bad_series_table.csv' spreadsheet in the "
+              "'./spreadsheets/ folder, that you have a 'credentials' file in "
+              "the .aws subdirectory of your home directory, that you have "
+              "the latest AWS CLI installed, and that the 'aws' executable is "
+              "in your BASH PATH variable. For more information, see https://"
+              "docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html")
+        cleanup(cli_args.temp, 1)
 
     print("\nABCD data download finished at:")
     subprocess.check_call("date")
