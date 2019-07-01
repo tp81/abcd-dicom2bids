@@ -1,6 +1,6 @@
 # `src` folder
 
-This folder contains all of the scripts used by the `abcd2bids.py` wrapper. There should be 13 files in this folder, as well as a `bin` subdirectory.
+This folder contains all of the scripts used by the `abcd2bids.py` wrapper. There should be at least 13 files in this folder (not counting the pre-compilation files) as well as a `bin` subdirectory.
 
 ## Files belonging in this folder
 
@@ -26,3 +26,8 @@ This folder contains all of the scripts used by the `abcd2bids.py` wrapper. Ther
 
 #### Scripts used to make NDA data meet BIDS standards:
 1. `correct_jsons.py`
+
+#### Pre-compilation scripts that, while not necessary because the wrapper uses compiled versions, are included here just in case
+1. `compile.sh`
+1. `data_gatherer.m`
+1. `eta_squared.m`
